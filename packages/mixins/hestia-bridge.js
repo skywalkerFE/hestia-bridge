@@ -38,25 +38,25 @@ const hestiaBridge = {
     routeChange(to) {
       this.$router.push(to)
     },
-    formatSideMenu(menu, level) {
+    formatSideMenu(menu, level = 2) {
       let res = []
 
       menu.forEach(x => {
         x.mini = true
         x.filled = false
-        x.indentLevel = level ? level * 3 : 3
-        if (x.show === void 0 || x.show()) {
+        x.indentLevel = level * 2
+        if (x.show === void 0 || x.show === true || x.show.call(this)) {
           let temp = {
             mini: true,
             filled: false,
             collapsed: x.collapsed !== void 0 ? x.collapsed : true,
-            indentLevel: level ? level * 3 : 3,
+            indentLevel: level * 2,
             content: x.content || x.name,
             to: x.to || x.route
           }
 
           if (x.sub !== void 0 || x.submenus !== void 0) {
-            temp.sub = this.formatSideMenu(x.sub || x.submenus, level ? level + 1 : 2)
+            temp.sub = this.formatSideMenu(x.sub || x.submenus, level + 1)
           }
           res.push(temp)
         }
