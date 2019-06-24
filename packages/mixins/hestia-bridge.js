@@ -9,7 +9,7 @@ const hestiaBridge = {
       if (!this.insideHestia) {
         onmessage = e => {
           if (e.ports[0]) {
-            let projectName = e.data.project
+            let projectName = this.getProjectList().find(project => project.url.indexOf(e.origin) > -1).name
 
             this.hestiaPort[projectName] = e.ports[0]
             this.hestiaPort[projectName].onmessage = e => {
@@ -38,19 +38,19 @@ const hestiaBridge = {
     routeChange(to) {
       this.$router.push(to)
     },
-    formatSideMenu(menu, level = 2) {
+    formatSideMenu(menu, level = 4) {
       let res = []
 
       menu.forEach(x => {
         x.mini = true
         x.filled = false
-        x.indentLevel = level * 2
+        x.indentLevel = level
         if (x.show === void 0 || x.show === true || x.show.call(this)) {
           let temp = {
             mini: true,
             filled: false,
             collapsed: x.collapsed !== void 0 ? x.collapsed : true,
-            indentLevel: level * 2,
+            indentLevel: level,
             content: x.content || x.name,
             to: x.to || x.route
           }
