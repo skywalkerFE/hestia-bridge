@@ -1,6 +1,6 @@
 {
   "name": "@skywalker-fe/hestia-bridge",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "hestia-bridge",
   "main": "index.js",
   "scripts": {

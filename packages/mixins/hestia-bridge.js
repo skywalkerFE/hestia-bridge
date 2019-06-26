@@ -4,8 +4,14 @@ const hestiaBridge = {
     hestiaChannel: void 0,
     hestiaPort: {}
   }),
+  beforeRouteLeave(to, from, next) {
+    if (this.insideHestia) {
+      this.sendMessage('logout')
+    }
+    next()
+  },
   methods: {
-    initCommunication(project) {
+    initCommunication(callback) {
       if (!this.insideHestia) {
         onmessage = e => {
           if (e.ports[0]) {
@@ -15,6 +21,7 @@ const hestiaBridge = {
             this.hestiaPort[projectName].onmessage = e => {
               this.onMessage(e, projectName)
             }
+            return callback && callback(projectName)
           }
         }
       } else {
@@ -22,7 +29,10 @@ const hestiaBridge = {
   
         this.hestiaPort = this.hestiaChannel.port1
         this.hestiaPort.onmessage = this.onMessage
-        window.parent.postMessage({ project }, '*', [this.hestiaChannel.port2])
+        window.parent.postMessage('init', '*', [this.hestiaChannel.port2])
+        this.$watch('$route', v => {
+          this.sendMessage('routeChange', v.fullPath)
+        }, { immediate: true })
       }
     },
     sendMessage(callee, params, project) {
@@ -35,8 +45,11 @@ const hestiaBridge = {
   
       this[data.callee](data.params, project)
     },
-    routeChange(to) {
-      this.$router.push(to)
+    routeChange(to, project) {
+      this.$router.push(project === void 0 ? to : { path: `/${project}${to}` })
+    },
+    logout() {
+      this.$router.push('/login')
     },
     formatSideMenu(menu, level = 4) {
       let res = []
